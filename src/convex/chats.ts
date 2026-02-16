@@ -44,17 +44,21 @@ export const streamMessage = internalAction({
         query: userPrompt,
       },
     );
+    const contextText = context?.text ?? '';
+    
+    // Use promptMessageId and override with context-enhanced prompt
     const result = await Agent.documentAgent.streamText(
       ctx,
       { threadId },
       {
         promptMessageId,
-        prompt: `# Context:\n\n${context.text}\n\n---\n\n# Question:\n\n"""${userPrompt}\n"""`,
-      },
+        prompt: `# Context:\n\n${contextText}\n\n---\n\n# Question:\n\n"""${userPrompt}\n"""`,
+      } as any, // Type assertion to bypass the complex intersection
       {
         saveStreamDeltas: { chunking: 'word', throttleMs: 100 },
       },
     );
+    
     await result.consumeStream();
   },
 });

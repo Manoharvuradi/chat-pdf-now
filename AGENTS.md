@@ -218,7 +218,7 @@ Required variables (set in `.env.local` and Convex dashboard):
 
 - `CONVEX_DEPLOYMENT`, `NEXT_PUBLIC_CONVEX_URL`
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`
-- `OPENAI_API_KEY`
+- `OPENAI_API_KEY` — **Must be set in the Convex Dashboard** (Settings → Environment Variables) for document chat to work; the backend runs in Convex and needs this to call OpenAI. You can also run: `npx convex env set OPENAI_API_KEY <your-key>`
 
 ## Key Patterns
 

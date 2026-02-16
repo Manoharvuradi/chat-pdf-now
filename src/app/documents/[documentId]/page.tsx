@@ -26,6 +26,7 @@ export default async function DocumentChatPage(
 
   return (
     <DocumentChatPageClient
+      documentId={documentId as Id<'documents'>}
       preloadedFileUrl={preloadedFileUrl}
       preloadedDocument={preloadedDocument}
     />

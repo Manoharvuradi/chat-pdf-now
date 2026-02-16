@@ -1,6 +1,6 @@
 'use client';
 
-import { Preloaded, usePreloadedQuery } from 'convex/react';
+import { Preloaded, usePreloadedQuery, useQuery } from 'convex/react';
 import dynamic from 'next/dynamic';
 
 import {
@@ -9,6 +9,7 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
 import { api } from '@/convex/_generated/api';
+import { Id } from '@/convex/_generated/dataModel';
 import DocumentChat from '@/features/chat/document-chat';
 
 const DocumentPreview = dynamic(
@@ -19,6 +20,7 @@ const DocumentPreview = dynamic(
 );
 
 export interface DocumentChatPageClientProps {
+  documentId: Id<'documents'>;
   preloadedFileUrl: Preloaded<typeof api.documents.getDocumentDownloadUrl>;
   preloadedDocument: Preloaded<typeof api.documents.getDocumentById>;
 }
@@ -27,7 +29,11 @@ export default function DocumentChatPageClient(
   props: DocumentChatPageClientProps,
 ) {
   const fileUrl = usePreloadedQuery(props.preloadedFileUrl);
-  const document = usePreloadedQuery(props.preloadedDocument);
+  const preloadedDocument = usePreloadedQuery(props.preloadedDocument);
+  const document = useQuery(api.documents.getDocumentById, {
+    documentId: props.documentId,
+  });
+  const doc = document ?? preloadedDocument;
 
   return (
     <ResizablePanelGroup direction="horizontal">
@@ -36,7 +42,7 @@ export default function DocumentChatPageClient(
       </ResizablePanel>
       <ResizableHandle withHandle className="w-1" />
       <ResizablePanel className="min-w-[500px]">
-        <DocumentChat document={document} />
+        <DocumentChat documentId={props.documentId} document={doc} />
       </ResizablePanel>
     </ResizablePanelGroup>
   );

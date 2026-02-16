@@ -1,5 +1,5 @@
 import { vEntryId } from '@convex-dev/rag';
-import { v } from 'convex/values';
+import { ConvexError, v } from 'convex/values';
 
 import { internal } from './_generated/api';
 import { internalAction, internalMutation } from './_generated/server';
@@ -132,6 +132,26 @@ export const getDocumentById = Auth.authQuery({
   },
   handler: async (ctx, { documentId }) => {
     return await Documents.getDocument(ctx, documentId);
+  },
+});
+
+export const ensureDocumentChatReady = Auth.authMutation({
+  args: {
+    documentId: v.id('documents'),
+  },
+  handler: async (ctx, { documentId }) => {
+    const user = await Users.getCurrentUserOrThrow(ctx);
+    const document = await Documents.getDocument(ctx, documentId);
+    if (document.userId !== user._id) {
+      throw new ConvexError('Unauthorized');
+    }
+    if (document.agentThreadId != null) {
+      return;
+    }
+    const { threadId } = await Agent.createThread(ctx);
+    await Documents.updateDocument(ctx, documentId, {
+      agentThreadId: threadId,
+    });
   },
 });
 
