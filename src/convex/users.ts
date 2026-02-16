@@ -1,7 +1,7 @@
 import { UserJSON } from '@clerk/backend';
 import { Validator, v } from 'convex/values';
 
-import { internalMutation } from './_generated/server';
+import { internalMutation, mutation, query } from './_generated/server';
 import * as Auth from './model/auth';
 import * as Users from './model/users';
 
@@ -45,5 +45,50 @@ export const deleteFromClerk = internalMutation({
         `Cannot delete user, there is none for Clerk user ID: ${clerkUserId}`,
       );
     }
+  },
+});
+
+
+export const ensureUserExists = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    // Check if user already exists
+    const existingUser = await ctx.db
+      .query('users')
+      .withIndex('by_external_id', (q) => q.eq('externalId', identity.subject))
+      .unique();
+
+    if (existingUser) {
+      return existingUser;
+    }
+
+    // Create new user
+    const userId = await ctx.db.insert("users", {
+      externalId: identity.subject,
+      name: identity.name ?? "",
+    });
+
+    return await ctx.db.get(userId);
+  },
+});
+
+// Optional: Get current user helper
+export const getCurrentUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    return await ctx.db
+      .query('users')
+      .withIndex('by_external_id', (q) => q.eq('externalId', identity.subject))
+      .unique();
   },
 });

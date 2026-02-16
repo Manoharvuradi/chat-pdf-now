@@ -8,6 +8,7 @@ import { Toaster } from 'sonner';
 import { fontMono, fontSans } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
 import ConvexClientProvider from '@/providers/convex-client-provider';
+import { UserSync } from '@/components/users-sync';
 
 export const metadata: Metadata = {
   title: 'Chat PDF Now | Chat with your PDF documents',
@@ -37,6 +38,7 @@ export default function RootLayout({
               disableTransitionOnChange
               enableColorScheme
             >
+               <UserSync /> {/* Add this line */}
               <Toaster position="top-right" richColors />
               <main className="flex h-svh flex-col">{children}</main>
             </ThemeProvider>
