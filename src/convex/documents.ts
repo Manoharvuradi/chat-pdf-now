@@ -8,6 +8,7 @@ import * as Auth from './model/auth';
 import * as Documents from './model/documents';
 import * as Rag from './model/rag';
 import * as Users from './model/users';
+import { canUploadPDF } from './subscriptions';
 
 export const updateDocumentWithThreadAndRagEntry = internalMutation({
   args: {
@@ -99,6 +100,12 @@ export const processUploadedDocument = Auth.authMutation({
   },
   handler: async (ctx, { name, storageId, size, text }) => {
     const user = await Users.getCurrentUserOrThrow(ctx);
+    
+    // Check if user can upload
+    if (!canUploadPDF(user)) {
+      throw new Error('Free tier limit: 3 PDFs maximum. Upgrade to upload more.');
+    }
+    
     const documentId = await Documents.addDocument(ctx, {
       name,
       storageId,
@@ -107,6 +114,12 @@ export const processUploadedDocument = Auth.authMutation({
       agentThreadId: null,
       ragEntryId: null,
     });
+    
+    // Increment PDF count
+    await ctx.runMutation(internal.subscriptions.incrementPDFCount, {
+      userId: user._id,
+    });
+    
     await ctx.scheduler.runAfter(
       0,
       internal.documents.initializeDocumentChatSystem,

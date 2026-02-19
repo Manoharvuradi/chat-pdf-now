@@ -8,18 +8,42 @@ export async function addUser(
   user: {
     name: string;
     externalId: string;
+    // Optional fields for free tier and subscription
+    pdfCount?: number;
+    freeQuestionsRemaining?: number;
+    freeQuestionsResetDate?: number;
+    creditBalance?: number;
+    totalQuestionsAsked?: number;
+    totalPdfsUploaded?: number;
+    lifetimeSpend?: number;
+    // Subscription fields
+    lemonSqueezyCustomerId?: string;
+    subscriptionId?: string;
+    subscriptionStatus?: 'active' | 'cancelled' | 'expired' | 'past_due' | 'paused' | 'unpaid';
+    subscriptionEndsAt?: number;
   },
 ) {
-  return await ctx.db.insert('users', user);
+  return await ctx.db.insert('users', user as any);
 }
 
 export async function updateUser(
   ctx: MutationCtx,
   userId: Id<'users'>,
-  user: {
+  user: Partial<{
     name: string;
     externalId: string;
-  },
+    pdfCount: number;
+    freeQuestionsRemaining: number;
+    freeQuestionsResetDate: number;
+    creditBalance: number;
+    totalQuestionsAsked: number;
+    totalPdfsUploaded: number;
+    lifetimeSpend: number;
+    lemonSqueezyCustomerId: string;
+    subscriptionId: string;
+    subscriptionStatus: 'active' | 'cancelled' | 'expired' | 'past_due' | 'paused' | 'unpaid';
+    subscriptionEndsAt: number;
+  }>,
 ) {
   return await ctx.db.patch(userId, user);
 }

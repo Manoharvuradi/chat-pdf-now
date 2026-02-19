@@ -17,16 +17,31 @@ export const upsertFromClerk = internalMutation({
     data: v.any() as Validator<UserJSON>,
   },
   handler: async (ctx, { data }) => {
-    const userAttributes = {
-      name: `${data.first_name} ${data.last_name}`,
-      externalId: data.id,
-    };
-
     const user = await Users.getUserByExternalId(ctx, data.id);
+    
     if (user === null) {
-      await Users.addUser(ctx, userAttributes);
+      // Create new user with FREE TIER defaults
+      const now = Date.now();
+      const oneMonthFromNow = now + 30 * 24 * 60 * 60 * 1000;
+      
+      await Users.addUser(ctx, {
+        name: `${data.first_name} ${data.last_name}`,
+        externalId: data.id,
+        
+        // Free tier defaults
+        pdfCount: 0,
+        freeQuestionsRemaining: 30,
+        freeQuestionsResetDate: oneMonthFromNow,
+        creditBalance: 0,
+        totalQuestionsAsked: 0,
+        totalPdfsUploaded: 0,
+        lifetimeSpend: 0,
+      });
     } else {
-      await Users.updateUser(ctx, user._id, userAttributes);
+      // Just update name if user exists
+      await Users.updateUser(ctx, user._id, {
+        name: `${data.first_name} ${data.last_name}`,
+      });
     }
   },
 });
@@ -58,19 +73,32 @@ export const ensureUserExists = mutation({
     }
 
     // Check if user already exists
-    const existingUser = await ctx.db
-      .query('users')
-      .withIndex('by_external_id', (q) => q.eq('externalId', identity.subject))
-      .unique();
+    const existingUser = await Users.getUserByExternalId(ctx, identity.subject);
 
     if (existingUser) {
       return existingUser;
     }
 
-    // Create new user
-    const userId = await ctx.db.insert("users", {
+    // Create new user with FREE TIER defaults using the helper
+    const now = Date.now();
+    const oneMonthFromNow = now + 30 * 24 * 60 * 60 * 1000; // 30 days
+    
+    const userId = await Users.addUser(ctx, {
       externalId: identity.subject,
       name: identity.name ?? "",
+      
+      // Free tier: 3 PDFs, 30 questions/month
+      pdfCount: 0,
+      freeQuestionsRemaining: 30,
+      freeQuestionsResetDate: oneMonthFromNow,
+      
+      // No credits or subscription initially
+      creditBalance: 0,
+      
+      // Analytics
+      totalQuestionsAsked: 0,
+      totalPdfsUploaded: 0,
+      lifetimeSpend: 0,
     });
 
     return await ctx.db.get(userId);

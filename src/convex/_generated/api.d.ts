@@ -16,6 +16,7 @@ import type * as model_auth from "../model/auth.js";
 import type * as model_documents from "../model/documents.js";
 import type * as model_rag from "../model/rag.js";
 import type * as model_users from "../model/users.js";
+import type * as subscriptions from "../subscriptions.js";
 import type * as users from "../users.js";
 
 import type {
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   "model/documents": typeof model_documents;
   "model/rag": typeof model_rag;
   "model/users": typeof model_users;
+  subscriptions: typeof subscriptions;
   users: typeof users;
 }>;
 
