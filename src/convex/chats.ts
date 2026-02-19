@@ -8,6 +8,7 @@ import * as Agent from './model/agent';
 import * as Auth from './model/auth';
 import * as Rag from './model/rag';
 import * as Users from './model/users';
+import { canAskQuestion } from './subscriptions';
 
 export const searchDocumentEmbeddings = internalAction({
   args: {
@@ -92,12 +93,23 @@ export const sendMessage = Auth.authMutation({
   },
   handler: async (ctx, { prompt, threadId, documentId }) => {
     const user = await Users.getCurrentUserOrThrow(ctx);
+    
+    // Check if user can ask a question
+    if (!canAskQuestion(user)) {
+      throw new Error('You have no questions remaining. Please upgrade to continue.');
+    }
+    
+    // Deduct question BEFORE sending
+    await ctx.runMutation(internal.subscriptions.deductQuestion, {
+      userId: user._id,
+    });
+    
     const { messageId } = await Agent.documentAgent.saveMessage(ctx, {
       threadId,
       prompt,
-      // Skip embeddings for now. They'll be generated lazily when streaming the text.
       skipEmbeddings: true,
     });
+    
     await ctx.scheduler.runAfter(0, internal.chats.streamMessage, {
       threadId,
       userPrompt: prompt,
