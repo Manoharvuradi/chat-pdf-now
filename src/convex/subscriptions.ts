@@ -6,7 +6,21 @@ import { Doc } from './_generated/dataModel';
  * Check if user has an active subscription (Power User - $9/month)
  */
 export function isPremiumUser(user: Doc<'users'>): boolean {
-  return user.subscriptionStatus === 'active';
+  // Check if subscription is active
+  if (user.subscriptionStatus === 'active') {
+    return true;
+  }
+  
+  // Check if cancelled but still within billing period
+  if (
+    user.subscriptionStatus === 'cancelled' && 
+    user.subscriptionEndsAt && 
+    Date.now() < user.subscriptionEndsAt
+  ) {
+    return true; // Still premium until end date
+  }
+  
+  return false;
 }
 
 /**

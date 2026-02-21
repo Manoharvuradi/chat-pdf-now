@@ -1,22 +1,32 @@
 'use client';
 
-import { Crown, Zap, Loader2 } from 'lucide-react';
+import { Crown, Zap, Loader2, ExternalLink, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UsageStats } from '@/components/usage-stats';
 import { useUserLimits } from '@/hooks/use-user-limits';
 import { useCheckout } from '@/hooks/use-checkout';
+import { useCustomerPortal } from '@/hooks/use-customer-portal';
+import { PurchaseHistory } from '@/components/purchase-history';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { format } from 'date-fns';
 
 export default function BillingPage() {
   const { isPremium, isLoading: limitsLoading } = useUserLimits();
+  const user = useQuery(api.users.getCurrentUser);
   const { 
     buyCredits, 
     subscribe, 
     isLoadingCredits, 
     isLoadingSubscription 
   } = useCheckout();
+  const { openPortal, isLoading: portalLoading } = useCustomerPortal();
 
   const creditsVariantId = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_CREDITS!;
   const subscriptionVariantId = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_SUBSCRIPTION!;
+
+  const isCancelled = user?.subscriptionStatus === 'cancelled';
+  const endsAt = user?.subscriptionEndsAt;
 
   if (limitsLoading) {
     return (
@@ -27,8 +37,26 @@ export default function BillingPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-4xl p-6">
+    <div className="container mx-auto max-w-4xl p-6 overflow-auto">
       <h1 className="text-3xl font-bold mb-6">Billing & Usage</h1>
+
+      {isPremium && isCancelled && endsAt && (
+        <div className="mb-6 rounded-lg border-2 border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-yellow-900 dark:text-yellow-100">
+                Subscription Cancelled
+              </h3>
+              <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                You'll have premium access until{' '}
+                <strong>{format(new Date(endsAt), 'MMMM dd, yyyy')}</strong>.
+                After that, you'll be switched to the Free Tier.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Current Plan */}
       <div className="mb-8 rounded-lg border bg-gradient-to-r from-stone-50 to-stone-100 p-6 dark:from-stone-900 dark:to-stone-800">
@@ -75,6 +103,37 @@ export default function BillingPage() {
       <div className="mb-8">
         <h3 className="text-lg font-semibold mb-4">Current Usage</h3>
         <UsageStats />
+      </div>
+
+      {/* Subscription Management (Premium users only) */}
+      {isPremium && (
+        <div className="mb-8 rounded-lg border border-purple-200 bg-purple-50 p-6 dark:border-purple-800 dark:bg-purple-900/20">
+          <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+            <Crown className="h-5 w-5 text-purple-600" />
+            Manage Subscription
+          </h3>
+          <p className="text-sm text-stone-600 dark:text-stone-400 mb-4">
+            Update payment method, view invoices, or cancel your subscription.
+          </p>
+          <Button 
+            variant="outline"
+            onClick={openPortal}
+            disabled={portalLoading}
+            className="border-purple-300 hover:bg-purple-100 dark:border-purple-700 dark:hover:bg-purple-900/40"
+          >
+            {portalLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <ExternalLink className="mr-2 h-4 w-4" />
+            )}
+            Manage Subscription
+          </Button>
+        </div>
+      )}
+
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold mb-4">Purchase History</h3>
+        <PurchaseHistory />
       </div>
 
       {/* Pricing Options */}

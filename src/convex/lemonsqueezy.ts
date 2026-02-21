@@ -1,7 +1,7 @@
 import { v } from 'convex/values';
 import { action } from './_generated/server';
 import { internal } from './_generated/api';
-import { lemonSqueezySetup, createCheckout } from '@lemonsqueezy/lemonsqueezy.js';
+import { lemonSqueezySetup, createCheckout, getCustomer } from '@lemonsqueezy/lemonsqueezy.js';
 
 /**
  * Create a checkout session for credits (one-time payment)
@@ -129,6 +129,54 @@ export const createSubscriptionCheckout = action({
 
     return {
       url: checkout.data?.data.attributes.url,
+    };
+  },
+});
+
+/**
+ * Get customer portal URL for subscription management
+ */
+export const getCustomerPortalUrl = action({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error('Not authenticated');
+    }
+
+    const user = await ctx.runQuery(internal.users.getCurrentUserInternal);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Check if user has a subscription
+    if (!user.lemonSqueezyCustomerId) {
+      throw new Error('No customer ID found');
+    }
+
+    const apiKey = process.env.LEMONSQUEEZY_API_KEY;
+    if (!apiKey) {
+      throw new Error('Missing LEMONSQUEEZY_API_KEY');
+    }
+
+    lemonSqueezySetup({ apiKey });
+
+    // Get customer details which includes portal URL
+    const customer = await getCustomer(user.lemonSqueezyCustomerId);
+
+    if (customer.error) {
+      console.error('Customer portal error:', customer.error);
+      throw new Error('Failed to get customer portal');
+    }
+
+    const portalUrl = customer.data?.data.attributes.urls.customer_portal;
+
+    if (!portalUrl) {
+      throw new Error('Customer portal URL not available');
+    }
+
+    return {
+      url: portalUrl,
     };
   },
 });
