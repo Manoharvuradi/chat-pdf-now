@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as billing from "../billing.js";
 import type * as chats from "../chats.js";
 import type * as documents from "../documents.js";
 import type * as http from "../http.js";
@@ -28,6 +29,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  billing: typeof billing;
   chats: typeof chats;
   documents: typeof documents;
   http: typeof http;
