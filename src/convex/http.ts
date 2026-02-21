@@ -7,6 +7,7 @@ import { httpAction } from './_generated/server';
 
 const http = httpRouter();
 
+// Existing Clerk webhook
 http.route({
   path: '/clerk-users-webhook',
   method: 'POST',
@@ -31,6 +32,100 @@ http.route({
     }
 
     return new Response(null, { status: 200 });
+  }),
+});
+
+// Lemon Squeezy webhook
+http.route({
+  path: '/lemonsqueezy-webhook',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    const body = await request.text();
+    const signature = request.headers.get('X-Signature');
+
+    // Verify webhook signature
+    const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+    if (!secret) {
+      console.error('Missing LEMONSQUEEZY_WEBHOOK_SECRET');
+      return new Response('Webhook secret not configured', { status: 500 });
+    }
+
+    if (!signature) {
+      console.error('Missing X-Signature header');
+      return new Response('Missing signature', { status: 401 });
+    }
+
+    // Verify signature using Web Crypto API
+    try {
+      const encoder = new TextEncoder();
+      const secretKey = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(secret),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+
+      const signatureBuffer = await crypto.subtle.sign(
+        'HMAC',
+        secretKey,
+        encoder.encode(body)
+      );
+
+      const calculatedSignature = Array.from(new Uint8Array(signatureBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+
+      if (signature !== calculatedSignature) {
+        console.error('Invalid webhook signature');
+        return new Response('Invalid signature', { status: 401 });
+      }
+    } catch (error) {
+      console.error('Error verifying signature:', error);
+      return new Response('Error verifying signature', { status: 500 });
+    }
+
+    // Parse event
+    const event = JSON.parse(body);
+    console.log('Lemon Squeezy webhook event:', event.meta.event_name);
+
+    try {
+      // Handle different event types
+      switch (event.meta.event_name) {
+        case 'order_created':
+          await ctx.runMutation(internal.webhooks.handleOrderCreated, {
+            order: event.data,
+          });
+          break;
+
+        case 'subscription_created':
+          await ctx.runMutation(internal.webhooks.handleSubscriptionCreated, {
+            subscription: event.data,
+          });
+          break;
+
+        case 'subscription_updated':
+          await ctx.runMutation(internal.webhooks.handleSubscriptionUpdated, {
+            subscription: event.data,
+          });
+          break;
+
+        case 'subscription_cancelled':
+        case 'subscription_expired':
+          await ctx.runMutation(internal.webhooks.handleSubscriptionEnded, {
+            subscription: event.data,
+          });
+          break;
+
+        default:
+          console.log('Unhandled event type:', event.meta.event_name);
+      }
+
+      return new Response('Webhook processed', { status: 200 });
+    } catch (error) {
+      console.error('Webhook processing error:', error);
+      return new Response('Error processing webhook', { status: 500 });
+    }
   }),
 });
 

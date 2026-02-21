@@ -1,7 +1,7 @@
 import { UserJSON } from '@clerk/backend';
 import { Validator, v } from 'convex/values';
 
-import { internalMutation, mutation, query } from './_generated/server';
+import { internalMutation, internalQuery, mutation, query } from './_generated/server';
 import * as Auth from './model/auth';
 import * as Users from './model/users';
 
@@ -105,8 +105,24 @@ export const ensureUserExists = mutation({
   },
 });
 
-// Optional: Get current user helper
+// Regular query for client use
 export const getCurrentUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    return await ctx.db
+      .query('users')
+      .withIndex('by_external_id', (q) => q.eq('externalId', identity.subject))
+      .unique();
+  },
+});
+
+// Internal query for server-to-server use
+export const getCurrentUserInternal = internalQuery({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();

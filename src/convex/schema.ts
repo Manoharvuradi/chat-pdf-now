@@ -56,4 +56,11 @@ export default defineSchema({
     agentThreadId: v.union(v.string(), v.null()),
     ragEntryId: v.union(vEntryId, v.null()),
   }).index('by_user_id', ['userId']),
+
+  checkoutSessions: defineTable({
+    checkoutId: v.string(),
+    userId: v.id('users'),
+    variantId: v.string(),
+    createdAt: v.number(),
+  }).index('by_checkout_id', ['checkoutId']),
 });
