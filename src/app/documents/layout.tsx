@@ -1,4 +1,4 @@
-import { Bot, FileText, User } from 'lucide-react';
+import { Bot, FileText, Settings, User } from 'lucide-react';
 import Link from 'next/link';
 
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -48,9 +48,16 @@ export default function DocumentsLayout({
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end">
               <DropdownMenuItem asChild>
-                <Link href="/documents">
+                <Link href="/documents" className="flex items-center gap-2">
                   <FileText />
                   All documents
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/settings/billing" className="flex items-center gap-2">
+                  <Settings />
+                  Settings
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

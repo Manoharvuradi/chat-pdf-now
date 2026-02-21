@@ -11,6 +11,7 @@
 import type * as chats from "../chats.js";
 import type * as documents from "../documents.js";
 import type * as http from "../http.js";
+import type * as lemonsqueezy from "../lemonsqueezy.js";
 import type * as model_agent from "../model/agent.js";
 import type * as model_auth from "../model/auth.js";
 import type * as model_documents from "../model/documents.js";
@@ -18,6 +19,7 @@ import type * as model_rag from "../model/rag.js";
 import type * as model_users from "../model/users.js";
 import type * as subscriptions from "../subscriptions.js";
 import type * as users from "../users.js";
+import type * as webhooks from "../webhooks.js";
 
 import type {
   ApiFromModules,
@@ -29,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   chats: typeof chats;
   documents: typeof documents;
   http: typeof http;
+  lemonsqueezy: typeof lemonsqueezy;
   "model/agent": typeof model_agent;
   "model/auth": typeof model_auth;
   "model/documents": typeof model_documents;
@@ -36,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   "model/users": typeof model_users;
   subscriptions: typeof subscriptions;
   users: typeof users;
+  webhooks: typeof webhooks;
 }>;
 
 /**
