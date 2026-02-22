@@ -3,17 +3,17 @@
 import { Crown, Zap, Loader2, ExternalLink, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UsageStats } from '@/components/usage-stats';
+import { PurchaseHistory } from '@/components/purchase-history';
 import { useUserLimits } from '@/hooks/use-user-limits';
 import { useCheckout } from '@/hooks/use-checkout';
 import { useCustomerPortal } from '@/hooks/use-customer-portal';
-import { PurchaseHistory } from '@/components/purchase-history';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { format } from 'date-fns';
 
 export default function BillingPage() {
-  const { isPremium, isLoading: limitsLoading } = useUserLimits();
   const user = useQuery(api.users.getCurrentUser);
+  const { isPremium, isLoading: limitsLoading } = useUserLimits();
   const { 
     buyCredits, 
     subscribe, 
@@ -40,6 +40,7 @@ export default function BillingPage() {
     <div className="container mx-auto max-w-4xl p-6 overflow-auto">
       <h1 className="text-3xl font-bold mb-6">Billing & Usage</h1>
 
+      {/* Cancellation Warning */}
       {isPremium && isCancelled && endsAt && (
         <div className="mb-6 rounded-lg border-2 border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
           <div className="flex items-start gap-3">
@@ -67,6 +68,11 @@ export default function BillingPage() {
                 <>
                   <Crown className="h-5 w-5 text-purple-600" />
                   Power User
+                  {isCancelled && endsAt && (
+                    <span className="ml-2 text-xs font-normal text-yellow-600 dark:text-yellow-400">
+                      (Ends {format(new Date(endsAt), 'MMM dd')})
+                    </span>
+                  )}
                 </>
               ) : (
                 <>
@@ -131,6 +137,7 @@ export default function BillingPage() {
         </div>
       )}
 
+      {/* Purchase History */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold mb-4">Purchase History</h3>
         <PurchaseHistory />

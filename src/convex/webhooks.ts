@@ -186,3 +186,28 @@ export const handleSubscriptionEnded = internalMutation({
     });
   },
 });
+
+export const cleanupOldCheckoutSessions = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const oneHourAgo = Date.now() - 60 * 60 * 1000;
+    
+    const oldSessions = await ctx.db
+      .query('checkoutSessions')
+      .filter((q) => q.lt(q.field('createdAt'), oneHourAgo))
+      .collect();
+    
+    let deletedCount = 0;
+    
+    for (const session of oldSessions) {
+      await ctx.db.delete(session._id);
+      deletedCount++;
+    }
+    
+    if (deletedCount > 0) {
+      console.log(`✅ Cleaned up ${deletedCount} old checkout sessions`);
+    }
+    
+    return { deletedCount };
+  },
+});

@@ -225,3 +225,39 @@ export const decrementPDFCount = internalMutation({
     }
   },
 });
+
+
+export const resetFreeQuestionsForUsers = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const now = Date.now();
+    const users = await ctx.db.query('users').collect();
+    
+    let resetCount = 0;
+    
+    for (const user of users) {
+      // Skip premium users (they have unlimited)
+      if (isPremiumUser(user)) {
+        continue;
+      }
+      
+      // Check if reset date has passed
+      const resetDate = user.freeQuestionsResetDate || 0;
+      if (now >= resetDate) {
+        // Reset to 30 questions
+        const oneMonthFromNow = now + 30 * 24 * 60 * 60 * 1000;
+        
+        await ctx.db.patch(user._id, {
+          freeQuestionsRemaining: 30,
+          freeQuestionsResetDate: oneMonthFromNow,
+        });
+        
+        resetCount++;
+        console.log(`Reset questions for user ${user._id}`);
+      }
+    }
+    
+    console.log(`✅ Reset free questions for ${resetCount} users`);
+    return { resetCount };
+  },
+});

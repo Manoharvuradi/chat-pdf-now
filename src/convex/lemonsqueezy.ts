@@ -2,6 +2,7 @@ import { v } from 'convex/values';
 import { action } from './_generated/server';
 import { internal } from './_generated/api';
 import { lemonSqueezySetup, createCheckout, getCustomer } from '@lemonsqueezy/lemonsqueezy.js';
+const isProduction = process.env.CONVEX_CLOUD_URL?.includes('prod') ?? false;
 
 /**
  * Create a checkout session for credits (one-time payment)
@@ -45,7 +46,7 @@ export const createCreditsCheckout = action({
       },
       expiresAt: null,
       preview: true,
-      testMode: true,
+      testMode: !isProduction,
     });
 
     if (checkout.error) {
@@ -109,7 +110,7 @@ export const createSubscriptionCheckout = action({
       },
       expiresAt: null,
       preview: true,
-      testMode: true,
+      testMode: !isProduction,
     });
 
     if (checkout.error) {
