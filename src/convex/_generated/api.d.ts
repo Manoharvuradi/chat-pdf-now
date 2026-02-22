@@ -10,6 +10,7 @@
 
 import type * as billing from "../billing.js";
 import type * as chats from "../chats.js";
+import type * as crons from "../crons.js";
 import type * as documents from "../documents.js";
 import type * as http from "../http.js";
 import type * as lemonsqueezy from "../lemonsqueezy.js";
@@ -31,6 +32,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   billing: typeof billing;
   chats: typeof chats;
+  crons: typeof crons;
   documents: typeof documents;
   http: typeof http;
   lemonsqueezy: typeof lemonsqueezy;

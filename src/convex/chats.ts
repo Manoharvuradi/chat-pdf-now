@@ -1,6 +1,6 @@
 import { vStreamArgs } from '@convex-dev/agent';
 import { paginationOptsValidator } from 'convex/server';
-import { v } from 'convex/values';
+import { ConvexError, v } from 'convex/values';
 
 import { internal } from './_generated/api';
 import { internalAction } from './_generated/server';
@@ -8,7 +8,7 @@ import * as Agent from './model/agent';
 import * as Auth from './model/auth';
 import * as Rag from './model/rag';
 import * as Users from './model/users';
-import { canAskQuestion } from './subscriptions';
+import { canAskQuestion, isPremiumUser } from './subscriptions';
 
 export const searchDocumentEmbeddings = internalAction({
   args: {
@@ -96,7 +96,13 @@ export const sendMessage = Auth.authMutation({
     
     // Check if user can ask a question
     if (!canAskQuestion(user)) {
-      throw new Error('You have no questions remaining. Please upgrade to continue.');
+      throw new ConvexError({
+        message: isPremiumUser(user) 
+          ? 'Something went wrong' 
+          : user.freeQuestionsRemaining === 0 && user.creditBalance === 0
+            ? 'You have no questions remaining. Please upgrade to continue.'
+            : 'Cannot send message at this time.',
+      });
     }
     
     // Deduct question BEFORE sending
