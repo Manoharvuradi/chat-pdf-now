@@ -15,7 +15,7 @@ import { Loader2 } from 'lucide-react';
 interface UpgradeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  type: 'pdf' | 'question';
+  type: 'pdf' | 'question' | 'upgrade';
 }
 
 export function UpgradeModal({ open, onOpenChange, type }: UpgradeModalProps) {
@@ -31,11 +31,15 @@ export function UpgradeModal({ open, onOpenChange, type }: UpgradeModalProps) {
 
   const title = type === 'pdf' 
     ? 'PDF Upload Limit Reached' 
-    : 'Question Limit Reached';
+    : type === 'question'
+    ? 'Question Limit Reached'
+    : 'Upgrade Your Plan'; // Generic title
     
   const description = type === 'pdf'
     ? 'You\'ve reached the free tier limit of 3 PDFs. Upgrade to upload unlimited documents.'
-    : 'You\'ve used all 30 free questions this month. Upgrade to continue asking questions.';
+    : type === 'question'
+    ? 'You\'ve used all 30 free questions this month. Upgrade to continue asking questions.'
+    : 'Unlock unlimited questions and PDFs with a premium plan.'; // Generic description
 
   const isLoading = isLoadingCredits || isLoadingSubscription;
 

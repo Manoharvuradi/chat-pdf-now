@@ -1,6 +1,6 @@
 'use client';
 
-import { Crown, Zap, Loader2, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Crown, Zap, Loader2, ExternalLink, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UsageStats } from '@/components/usage-stats';
 import { PurchaseHistory } from '@/components/purchase-history';
@@ -10,6 +10,7 @@ import { useCustomerPortal } from '@/hooks/use-customer-portal';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { format } from 'date-fns';
+import Link from 'next/link';
 
 export default function BillingPage() {
   const user = useQuery(api.users.getCurrentUser);
@@ -38,7 +39,15 @@ export default function BillingPage() {
 
   return (
     <div className="container mx-auto max-w-4xl p-6 overflow-auto">
-      <h1 className="text-3xl font-bold mb-6">Billing & Usage</h1>
+      <div className="flex items-center gap-4 mb-6">
+        <Button variant="ghost" size="icon" asChild className='h-10 w-10'>
+          <Link href="/documents">
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+        </Button>
+        <h1 className="text-3xl font-bold">Billing & Usage</h1>
+      </div>
+
 
       {/* Cancellation Warning */}
       {isPremium && isCancelled && endsAt && (

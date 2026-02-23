@@ -11,7 +11,7 @@ export default function DocumentList(props: DocumentListProps) {
   const { documents } = props;
 
   return (
-    <div className="rounded-md border bg-white">
+    <div className="rounded-md border">
       <Table>
         <TableBody>
           {documents.map((document) => (

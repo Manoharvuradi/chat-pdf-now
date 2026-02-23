@@ -58,10 +58,10 @@ export function Navbar() {
             ) : (
               <>
                 <Button asChild variant="ghost">
-                  <Link href={"/sign-in" as any}>Sign In</Link>
+                  <Link href={"/sign-in?redirect_url=/documents" as any}>Sign In</Link>
                 </Button>
                 <Button asChild className="bg-linear-to-r from-emerald-600 to-green-600 text-white">
-                  <Link href={"/sign-up" as any}>Get Started</Link>
+                  <Link href={"/sign-up?redirect_url=/documents" as any}>Get Started</Link>
                 </Button>
               </>
             )}
