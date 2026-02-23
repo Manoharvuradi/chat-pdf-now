@@ -60,7 +60,7 @@ export default function BillingPage() {
       )}
 
       {/* Current Plan */}
-      <div className="mb-8 rounded-lg border bg-gradient-to-r from-stone-50 to-stone-100 p-6 dark:from-stone-900 dark:to-stone-800">
+      <div className="mb-8 rounded-lg border bg-linear-to-r from-stone-50 to-stone-100 p-6 dark:from-stone-900 dark:to-stone-800">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold flex items-center gap-2">
@@ -90,7 +90,7 @@ export default function BillingPage() {
           
           {!isPremium && (
             <Button 
-              className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+              className="bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
               onClick={() => subscribe(subscriptionVariantId)}
               disabled={isLoadingCredits || isLoadingSubscription}
             >

@@ -1,60 +1,21 @@
-import { ArrowRight, Bot } from 'lucide-react';
-import Link from 'next/link';
+import { CTA } from "./cta";
+import { Features } from "./features";
+import { Footer } from "./footer";
+import { Hero } from "./hero";
+import { HowItWorks } from "./how-it-works";
+import { Navbar } from "./navbar";
+import { Pricing } from "./pricing";
 
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-
-export default function WelcomeCard() {
+export default function LandingPage() {
   return (
-    <Card className="absolute top-1/2 left-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 border-0 bg-white/80 text-center shadow-lg backdrop-blur-sm">
-      <CardHeader className="space-y-4">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-600">
-          <Bot className="text-primary-foreground size-8" />
-        </div>
-        <CardTitle className="text-4xl leading-tight font-black tracking-tight text-emerald-700">
-          Chat PDF Now
-        </CardTitle>
-        <CardDescription className="text-base text-gray-600">
-          Transform your PDF documents into interactive conversations. Upload,
-          chat, and discover insights instantly.
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent>
-        <div className="space-y-3">
-          <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
-            <span className="text-base">🤖</span>
-            <span>AI-powered conversations</span>
-          </div>
-          <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
-            <span className="text-base">⚡</span>
-            <span>Instant document analysis</span>
-          </div>
-          <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
-            <span className="text-base">🔒</span>
-            <span>Secure and private</span>
-          </div>
-        </div>
-      </CardContent>
-
-      <CardFooter>
-        <Button
-          asChild
-          size="lg"
-          className="text-primary-foreground w-full bg-emerald-600 font-semibold shadow-lg transition-all duration-200 hover:bg-emerald-700 hover:shadow-xl"
-        >
-          <Link href="/documents" prefetch={false}>
-            Get Started <ArrowRight className="ml-1" />
-          </Link>
-        </Button>
-      </CardFooter>
-    </Card>
+    <div className="min-h-screen bg-linear-to-r from-white to-stone-50 dark:from-stone-950 dark:to-stone-900 overflow-auto">
+      <Navbar />
+      <Hero />
+      <Features />
+      <HowItWorks />
+      <Pricing />
+      <CTA />
+      <Footer />
+    </div>
   );
 }

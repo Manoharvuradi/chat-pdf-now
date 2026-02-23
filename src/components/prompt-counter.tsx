@@ -18,7 +18,7 @@ export function PromptCounter() {
   // Premium users
   if (isPremium) {
     return (
-      <div className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 px-4 py-2 text-sm font-medium text-white">
+      <div className="flex items-center gap-2 rounded-lg bg-linear-to-r from-purple-500 to-purple-600 px-4 py-2 text-sm font-medium text-white">
         <Sparkles className="h-4 w-4" />
         <span>Power User • Unlimited</span>
       </div>
@@ -28,7 +28,7 @@ export function PromptCounter() {
   // Users with credits
   if (creditBalance > 0) {
     return (
-      <div className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-sm font-medium text-white">
+      <div className="flex items-center gap-2 rounded-lg bg-linear-to-r from-blue-500 to-blue-600 px-4 py-2 text-sm font-medium text-white">
         <Zap className="h-4 w-4" />
         <span>{creditBalance} credits remaining</span>
       </div>
