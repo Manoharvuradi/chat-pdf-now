@@ -24,7 +24,7 @@ import { api } from '@/convex/_generated/api';
 import { Doc, Id } from '@/convex/_generated/dataModel';
 
 import { ChatWelcome } from './chat-welcome';
-import { PromptCounter } from '@/components/prompt-counter';
+// import { PromptCounter } from '@/components/prompt-counter';
 
 export interface DocumentChatProps {
   documentId: Id<'documents'>;
@@ -146,7 +146,7 @@ export default function DocumentChat(props: DocumentChatProps) {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />
-          <PromptCounter />
+          {/* <PromptCounter /> */}
           <PromptInputSubmit
             className="absolute right-2 bottom-2"
             disabled={!isReady || !prompt}

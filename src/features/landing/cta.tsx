@@ -11,7 +11,7 @@ export function CTA() {
             Ready to transform how you read PDFs?
           </h2>
           <p className="mt-6 text-lg leading-8 text-blue-100">
-            Start chatting with your documents today. No credit card required.
+            Start chatting with your documents today.
           </p>
           <div className="mt-10">
             <Button

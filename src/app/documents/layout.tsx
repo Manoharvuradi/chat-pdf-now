@@ -1,4 +1,6 @@
-import { Bot, FileText, Settings, User } from 'lucide-react';
+'use client';
+
+import { Bot, Crown, FileText, Settings, Sparkles, User } from 'lucide-react';
 import Link from 'next/link';
 
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -15,12 +17,17 @@ import {
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu';
 import SignOutMenuItem from '@/features/layout/sign-out-menu-item';
+import { useState } from 'react';
+import { UpgradeModal } from '@/components/upgrade-modal';
+import { useUserLimits } from '@/hooks/use-user-limits';
 
 export default function DocumentsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const { isPremium } = useUserLimits();
   return (
     <>
       <header className="flex shrink-0 items-center border-b bg-stone-50 p-4 shadow-sm dark:border-stone-800 dark:bg-stone-900">
@@ -37,8 +44,28 @@ export default function DocumentsLayout({
             </NavigationMenuLink>
           </NavigationMenu>
         </div>
-
         <div className="flex items-center gap-2">
+        {isPremium ? (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="cursor-pointer"
+            asChild
+          >
+            <Link href="/settings/billing">
+              <Crown className="h-4 w-4 text-purple-600" />
+            </Link>
+          </Button>
+        ) : (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="cursor-pointer"
+            onClick={() => setShowUpgradeModal(true)}
+          >
+            <Sparkles className="h-4 w-4 text-emerald-600" />
+          </Button>
+        )}
           <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -68,6 +95,12 @@ export default function DocumentsLayout({
       </header>
 
       <div className="flex flex-1 flex-col overflow-y-auto">{children}</div>
+
+      <UpgradeModal
+        open={showUpgradeModal}
+        onOpenChange={setShowUpgradeModal}
+        type="upgrade"
+      />
     </>
   );
 }
