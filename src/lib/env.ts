@@ -8,8 +8,8 @@ function validateEnv() {
       NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL,
       
       // Lemon Squeezy
-      NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_CREDITS: process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_CREDITS,
-      NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_SUBSCRIPTION: process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_SUBSCRIPTION,
+      NEXT_PUBLIC_LEMONSQUEEZY_CREDIT_ID: process.env.NEXT_PUBLIC_LEMONSQUEEZY_CREDIT_ID,
+      NEXT_PUBLIC_LEMONSQUEEZY_SUBSCRIPTION: process.env.NEXT_PUBLIC_LEMONSQUEEZY_SUBSCRIPTION,
     };
   
     const missing = Object.entries(required)
@@ -33,7 +33,7 @@ function validateEnv() {
       url: process.env.NEXT_PUBLIC_CONVEX_URL!,
     },
     lemonSqueezy: {
-      creditsVariantId: process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_CREDITS!,
-      subscriptionVariantId: process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_SUBSCRIPTION!,
+      creditsVariantId: process.env.NEXT_PUBLIC_LEMONSQUEEZY_CREDIT_ID!,
+      subscriptionVariantId: process.env.NEXT_PUBLIC_LEMONSQUEEZY_SUBSCRIPTION!,
     },
   } as const;
