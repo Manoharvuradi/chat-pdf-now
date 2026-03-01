@@ -23,8 +23,8 @@ export default function BillingPage() {
   } = useCheckout();
   const { openPortal, isLoading: portalLoading } = useCustomerPortal();
 
-  const creditsVariantId = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_CREDITS!;
-  const subscriptionVariantId = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_SUBSCRIPTION!;
+  const creditsVariantId = process.env.NEXT_PUBLIC_LEMONSQUEEZY_CREDIT_ID!;
+  const subscriptionVariantId = process.env.NEXT_PUBLIC_LEMONSQUEEZY_SUBSCRIPTION!;
 
   const isCancelled = user?.subscriptionStatus === 'cancelled';
   const endsAt = user?.subscriptionEndsAt;
